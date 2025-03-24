@@ -1,0 +1,39 @@
+# Python-related
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.env
+
+# FastAPI-related
+instance/
+*.db
+*.sqlite3
+
+# Redis-related
+dump.rdb
+appendonly.aof
+
+# Node.js / React Native
+node_modules/
+*.log
+.expo/
+.expo-shared/
+*.keystore
+*.gradle
+*.idea/
+
+# iOS / Android (React Native)
+android/.gradle/
+android/app/build/
+ios/Pods/
+ios/.DS_Store
+ios/build/
+*.xcworkspace/
+
+# VS Code / JetBrains / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
