@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, ActivityIndicator, Image} from "react-native";
+import { StyleSheet, Text, View, FlatList, ActivityIndicator} from "react-native";
 import { Link, NavigationContainer } from "@react-navigation/native";
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
@@ -6,6 +6,7 @@ import { RefreshControl, ScrollView } from "react-native-gesture-handler";
 import { SearchBar } from '@rneui/themed';
 import { Component } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
+import { Image } from 'expo-image';
 
 
 
@@ -58,13 +59,14 @@ export default function NewsScreen() {
                 title: item?.title || "No Title",
                 description: item?.description || "No Description",
                 url: item?.url || "#",
-                urlToImage: item?.urlToImage || "https://via.placeholder.com/150",
+                urlToImage: item?.urlToImage,
                 publishedAt: item?.publishedAt || "Unknown Date",
                 content: item?.content || "No Content Available",
             }))
             .filter((item) => item.id);
 
-                setNews(formattedNews);
+              setNews(formattedNews);
+
             } catch (error) {
                 console.error("Error fetching news:", error);
                 if (error.message == "No data") {
@@ -76,12 +78,11 @@ export default function NewsScreen() {
                 setLoading(false);
             }
          }, []);
-
       
   useEffect(() => {
     fetchNews();
   }, []);
-  
+
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchNews(search || "default");
@@ -124,10 +125,10 @@ export default function NewsScreen() {
               initialNumToRender={5}
               maxToRenderPerBatch={5}
               renderItem={({ item }) => (
-                <Link screen="details" params={{ id: item.id }} style={styles.newsItem}>
+                <Link key={item.id} screen="details" params={{ id: item.id, imageUrl: item.urlToImage }} style={styles.newsItem}>
                   <View>
                     {item.title && <Text style={styles.newsTitle}>{item.title}</Text>}
-                    {item.urlToImage && <Image source={{ uri: item.urlToImage }} style={styles.newsImage} />}
+                    {item.urlToImage && <Image source={{ uri: item.urlToImage }} cachePolicy="memory-disk" style={styles.newsImage} />}
                     {item.description && <Text style={styles.newsText}>{item.description}</Text>}
                     {item.publishedAt && (
                       <Text style={styles.newsTime}>🕒 {new Date(item.publishedAt).toLocaleString()}</Text>

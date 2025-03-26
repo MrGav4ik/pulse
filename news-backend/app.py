@@ -4,6 +4,7 @@ import httpx
 import json
 import hashlib
 import time
+import psycopg2
 
 API_KEY = "9af3ad0aa13947a5939715e0f52e495b"
 
@@ -21,12 +22,28 @@ async def startup():
         print(f"❌ Redis connection failed: {e}")
         app.state.redis = None
 
+    """Initialize PostgreSQL connection"""
+    try:
+        conn = psycopg2.connect(
+            host="localhost",
+            database="postgres",
+            user="postgres",
+            password="admin",
+        )
+        print("✅ PostgreSQL connected successfully")
+        app.state.conn = conn
+    except Exception as e:
+        print(f"❌ PostgreSQL connection failed: {e}")
+
 
 @app.on_event("shutdown")
 async def shutdown():
     """Close Redis connection"""
     if app.state.redis:
         await app.state.redis.close()
+    """""Close PostgreSQL connection"""
+    if app.state.conn:
+        app.state.conn.close()
 
 
 async def fetch_news(query: str):

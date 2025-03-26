@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, RefreshControl, ActivityIndicator } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { ActivityIndicator } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { Image } from 'expo-image';
+
 
 interface NewsItem {
   id?: number;
@@ -26,6 +27,7 @@ export default function NewsDetailsScreen() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  
 
   // Function to fetch news
   const fetchArticle = async () => {
@@ -45,7 +47,8 @@ export default function NewsDetailsScreen() {
         publishedAt: item.publishedAt,
         content: item.content,
       };
-
+      await Image.prefetch(news?.urlToImage || '');
+      
       setNews(formattedNews);
     } catch (error) {
       console.error(error);
@@ -86,10 +89,15 @@ export default function NewsDetailsScreen() {
                 {new Date(news.publishedAt).toLocaleString()}</Text> }
             </View>
             { news.description && <Text style={styles.newsDescription}>{news.description}</Text> }
-            { news.urlToImage && <Image
-              source={news.urlToImage ? { uri: news.urlToImage } : require('../assets/images/placeholder.png')}
-              style={news.urlToImage ? styles.newsImage : { width: 0, height: 0, margin: 0 }}
-            /> }
+            { news.urlToImage && (
+              <View>
+                <Image
+                  source={{ uri: news.urlToImage }}
+                  style={styles.newsImage}
+                  cachePolicy="memory-disk"
+                />
+              </View>
+              )}
             { news.content && <Text style={styles.newsContent}>{news.content}</Text> }
           </View>
         ) : null}
