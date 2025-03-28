@@ -7,7 +7,7 @@ import { StyleSheet } from "react-native";
 export default function Index() {
   return (
     <View style={styles.container}>
-      <Link screen="news" style={styles.text}>Go to News</Link>
+      <Link screen="News" style={styles.text}>Go to News</Link>
     </View>
   );
 }

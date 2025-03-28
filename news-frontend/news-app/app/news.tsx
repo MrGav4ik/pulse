@@ -1,12 +1,13 @@
 import { StyleSheet, Text, View, FlatList, ActivityIndicator} from "react-native";
-import { Link, NavigationContainer } from "@react-navigation/native";
 import { useEffect, useState, useCallback } from "react";
+import { Link, NavigationContainer } from "@react-navigation/native";
 import axios from "axios";
-import { RefreshControl, ScrollView } from "react-native-gesture-handler";
+import { GestureHandlerRootView, NativeViewGestureHandler, RefreshControl, ScrollView } from "react-native-gesture-handler";
 import { SearchBar } from '@rneui/themed';
 import { Component } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Image } from 'expo-image';
+import { useNavigation } from "@react-navigation/native";
 
 
 
@@ -25,9 +26,10 @@ interface NewsItem {
 
 }
 
-const BASE_API_URL = "http://172.20.10.2:8000/news";
+const BASE_API_URL = "http://172.20.10.5:8000/news";
 
 export default function NewsScreen() {
+  const navigation = useNavigation();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -94,58 +96,60 @@ export default function NewsScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      {
-        <SearchBar
-          platform="ios"
-          placeholder="Search"
-          onChangeText={(text) => setSearch(text)}
-          value={search}
-          containerStyle={styles.newsShowSearchBar}
-          searchIcon={{ name: "search", size: 20, color: "#aaa" }}
-          clearIcon={{ name: "close", size: 20, color: "#aaa" }}
-          onSubmitEditing={handleSearch}
-          onClear={() => fetchNews("default")}
-        />
-        }
-      {loading && !refreshing ? (
-        <ActivityIndicator size="large" color="#7f8e9e" style={{ marginTop: 20 }} />
-      ) : (
-        <ScrollView
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-          showsVerticalScrollIndicator={false}
-        >
-          {error ? (
-            <Text style={styles.errorText}>{error}</Text>
-          ) : (
-            <FlatList
-              scrollEnabled={false}
-              data={news.filter((item) => item.id)}
-              keyExtractor={(item) => item.id!.toString()}
-              initialNumToRender={5}
-              maxToRenderPerBatch={5}
-              renderItem={({ item }) => (
-                <Link key={item.id} screen="details" params={{ id: item.id, imageUrl: item.urlToImage }} style={styles.newsItem}>
-                  <View>
-                    {item.title && <Text style={styles.newsTitle}>{item.title}</Text>}
-                    {item.urlToImage && <Image source={{ uri: item.urlToImage }} cachePolicy="memory-disk" style={styles.newsImage} />}
-                    {item.description && <Text style={styles.newsText}>{item.description}</Text>}
-                    {item.publishedAt && (
-                      <Text style={styles.newsTime}>🕒 {new Date(item.publishedAt).toLocaleString()}</Text>
-                    )}
-                  </View>
-                </Link>
-              )}
-            />
-          )}
-        </ScrollView>
-      )}
-    </View>
+    <GestureHandlerRootView>
+      <View style={styles.container}>
+        {
+          <SearchBar
+            platform="ios"
+            placeholder="Search"
+            onChangeText={(text) => setSearch(text)}
+            value={search}
+            containerStyle={styles.newsShowSearchBar}
+            searchIcon={{ name: "search", size: 20, color: "#aaa" }}
+            clearIcon={{ name: "close", size: 20, color: "#aaa" }}
+            onSubmitEditing={handleSearch}
+            onClear={() => fetchNews("default")}
+          />
+          }
+        {loading && !refreshing ? (
+          <ActivityIndicator size="large" color="#7f8e9e" style={{ marginTop: 20 }} />
+        ) : (
+          <ScrollView
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            showsVerticalScrollIndicator={false}
+          >
+            {error ? (
+              <Text style={styles.errorText}>{error}</Text>
+            ) : (
+              <FlatList
+                scrollEnabled={false}
+                data={news.filter((item) => item.id)}
+                keyExtractor={(item) => item.id!.toString()}
+                initialNumToRender={5}
+                maxToRenderPerBatch={5}
+                renderItem={({ item }) => (
+                  <Link key={item.id} screen="Details" params={{ id: item.id, imageUrl: item.urlToImage }} style={styles.newsItem}>
+                    <View>
+                      {item.title && <Text style={styles.newsTitle}>{item.title}</Text>}
+                      {item.urlToImage && <Image source={{ uri: item.urlToImage }} cachePolicy="memory-disk" style={styles.newsImage} />}
+                      {item.description && <Text style={styles.newsText}>{item.description}</Text>}
+                      {item.publishedAt && (
+                        <Text style={styles.newsTime}>🕒 {new Date(item.publishedAt).toLocaleString()}</Text>
+                      )}
+                    </View>
+                  </Link>
+                )}
+              />
+            )}
+          </ScrollView>
+        )}
+      </View>
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10, backgroundColor: "#49657b", paddingTop: 50 },
+  container: { flex: 1, padding: 10, backgroundColor: "#49657b", paddingTop: 50, paddingBottom: 0, },
   newsItem: { marginBottom: 20, padding: 10, backgroundColor: "#4279a3", borderRadius: 20, zIndex: -2},
   newsTitle: { fontSize: 18, fontWeight: "bold", color: "black" },
   newsText: { fontSize: 12, color: "black"},

@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, RefreshControl, ActivityIndicator } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { useRoute, useNavigation, useNavigationState } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Image } from 'expo-image';
 
@@ -17,7 +17,7 @@ interface NewsItem {
   urlToImage: string;
 }
 
-const API_URL = "http://172.20.10.2:8000/news";
+const API_URL = "http://172.20.10.5:8000/news";
 
 export default function NewsDetailsScreen() {
   const route = useRoute();
@@ -27,6 +27,8 @@ export default function NewsDetailsScreen() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+
+  const index = useNavigationState(state => state.index);
   
 
   // Function to fetch news
@@ -70,11 +72,10 @@ export default function NewsDetailsScreen() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+      <TouchableOpacity onPress={() => navigation.navigate("News") } style={styles.backButton}>
         <Icon name="chevron-back-outline" size={30} color="#041D56" />
         <Text style={styles.backText}>Back</Text>
       </TouchableOpacity>
-
       <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         {loading ? (
           <ActivityIndicator size="large" color="#7f8e9e" />
