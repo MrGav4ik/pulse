@@ -17,7 +17,7 @@ interface NewsItem {
   urlToImage: string;
 }
 
-const API_URL = "http://172.20.10.2:8000/news";
+const API_BASE_URL = "http://172.20.10.2:8000";
 
 export default function NewsDetailsScreen() {
   const route = useRoute();
@@ -36,7 +36,7 @@ export default function NewsDetailsScreen() {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get(`${API_URL}/${id}`, { timeout: 5000 });
+      const response = await axios.get(`${API_BASE_URL}/news/${id}`, { timeout: 5000 });
       const item = response.data;
 
       const formattedNews = {

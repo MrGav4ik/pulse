@@ -26,7 +26,7 @@ interface NewsItem {
 
 }
 
-const BASE_API_URL = "http://172.20.10.2:8000/news";
+const API_BASE_URL = "http://172.20.10.2:8000";
 
 export default function NewsScreen() {
   const navigation = useNavigation();
@@ -43,8 +43,7 @@ export default function NewsScreen() {
 
     try {
         const timestart = new Date().getTime();
-        const { data } = await axios.get(`${BASE_API_URL}?query=${query}`, { timeout: 3000 });
-        console.debug("Data fetched in: ", new Date().getTime() - timestart)
+        const { data } = await axios.get(`${API_BASE_URL}/news?query=${query}`, { timeout: 3000 });
 
         if (!Array.isArray(data)) {
             throw new Error("Unexpected API response format.");
@@ -149,7 +148,7 @@ export default function NewsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10, backgroundColor: "#49657b", paddingTop: 50, paddingBottom: 0, },
+  container: { flex: 1, padding: 10, backgroundColor: "#49657b", paddingTop: 50, paddingBottom: 0},
   newsItem: { marginBottom: 20, padding: 10, backgroundColor: "#4279a3", borderRadius: 20, zIndex: -2},
   newsTitle: { fontSize: 18, fontWeight: "bold", color: "black" },
   newsText: { fontSize: 12, color: "black"},

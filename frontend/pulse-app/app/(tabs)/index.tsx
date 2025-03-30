@@ -3,7 +3,6 @@ import { Link } from "@react-navigation/native";
 import { StyleSheet } from "react-native";
 
 
-
 export default function Index() {
   return (
     <View style={styles.container}>
