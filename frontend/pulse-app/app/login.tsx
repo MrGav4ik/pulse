@@ -4,11 +4,10 @@ import { useState } from "react";
 import { useRouter } from "expo-router";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_BASE_URL } from "@env";
 
-const API_BASE_URL = "http://172.20.10.2:8000"
 
-
-export default function AuthScreen() {
+export default function LoginScreen() {
     const [username, setUsername] = useState<string | null>(null);
     const [password, setPassword] = useState<string | null>(null);
     const router = useRouter();
@@ -51,7 +50,7 @@ export default function AuthScreen() {
           secureTextEntry
           style={styles.input}
         />
-  
+        <Button title="Register" onPress={() => router.push("/register")} />
         <Button title="Login" onPress={handleLogin} />
       </View>
     );

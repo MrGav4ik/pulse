@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useRoute, useNavigation, useNavigationState } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Image } from 'expo-image';
+import { API_BASE_URL } from "@env";
 
 
 interface NewsItem {
@@ -17,7 +18,6 @@ interface NewsItem {
   urlToImage: string;
 }
 
-const API_BASE_URL = "http://172.20.10.2:8000";
 
 export default function NewsDetailsScreen() {
   const route = useRoute();

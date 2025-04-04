@@ -3,8 +3,9 @@ import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import axios from "axios";
+import { API_BASE_URL } from "@env";
 
-const API_BASE_URL = "http://172.20.10.2:8000";
+const API_BASE_URL = "http://172.20.10.5:8000";
 
 interface User {
   id: number;
@@ -44,7 +45,7 @@ export default function ProfileScreen() {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem("token");
-      router.replace("/auth"); // Navigate to auth screen
+      router.replace("/login"); // Navigate to auth screen
     } catch (error) {
       console.error("Logout error: ", error);
     }

@@ -8,7 +8,7 @@ import { Component } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Image } from 'expo-image';
 import { useNavigation } from "@react-navigation/native";
-
+import { API_BASE_URL } from "@env";
 
 
 type SearchBarComponentProps = {};
@@ -26,7 +26,6 @@ interface NewsItem {
 
 }
 
-const API_BASE_URL = "http://172.20.10.2:8000";
 
 export default function NewsScreen() {
   const navigation = useNavigation();

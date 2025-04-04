@@ -31,8 +31,8 @@ export default function RootLayout() {
 
     if (isAuthenticated && currentSegment !== "(tabs)") {
       router.replace("/(tabs)");
-    } else if (!isAuthenticated && currentSegment !== "auth") {
-      router.replace("/auth");
+    } else if (!isAuthenticated && currentSegment !== "login") {
+      router.replace("/login");
     }
   }, [isAuthenticated]);
 
@@ -49,7 +49,8 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="auth" options={{ headerShown: false }} />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="register" options={{ headerShown: false }} />
       </Stack>
     </GestureHandlerRootView>
   );
