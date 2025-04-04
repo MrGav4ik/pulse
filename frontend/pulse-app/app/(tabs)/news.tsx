@@ -8,7 +8,9 @@ import { Component } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Image } from 'expo-image';
 import { useNavigation } from "@react-navigation/native";
-import { API_BASE_URL } from "@env";
+
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_NEWS_API_URL;
 
 
 type SearchBarComponentProps = {};

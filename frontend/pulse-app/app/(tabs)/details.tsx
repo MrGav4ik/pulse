@@ -4,7 +4,10 @@ import axios from 'axios';
 import { useRoute, useNavigation, useNavigationState } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Image } from 'expo-image';
-import { API_BASE_URL } from "@env";
+import { useRouter } from 'expo-router';
+
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_NEWS_API_URL;
 
 
 interface NewsItem {
@@ -21,6 +24,7 @@ interface NewsItem {
 
 export default function NewsDetailsScreen() {
   const route = useRoute();
+  const router = useRouter();
   const navigation = useNavigation();
   const { id } = route.params as { id: number };
   const [news, setNews] = useState<NewsItem | null>(null);
@@ -72,7 +76,7 @@ export default function NewsDetailsScreen() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.navigate("news")} style={styles.backButton}>
+      <TouchableOpacity onPress={() => router.push("news")} style={styles.backButton}>
         <Icon name="chevron-back-outline" size={30} color="#041D56" />
         <Text style={styles.backText}>Back</Text>
       </TouchableOpacity>

@@ -1,10 +1,12 @@
 import { useRoute } from "@react-navigation/native";
-import { View, Text, Alert, StyleSheet, TextInput, Button } from "react-native";
+import { View, Text, Alert, StyleSheet, TextInput, Button, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { API_BASE_URL } from "@env";
+
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_AUTH_API_URL;
 
 
 export default function LoginScreen() {
@@ -33,26 +35,28 @@ export default function LoginScreen() {
         };
 
     return (
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.container}>
-        <Text style={styles.title}>Login</Text>
-  
-        <TextInput
-          placeholder="Username"
-          value={username}
-          onChangeText={setUsername}
-          style={styles.input}
-        />
-  
-        <TextInput
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          style={styles.input}
-        />
-        <Button title="Register" onPress={() => router.push("/register")} />
-        <Button title="Login" onPress={handleLogin} />
-      </View>
+          <Text style={styles.title}>Login</Text>
+    
+          <TextInput
+            placeholder="Username"
+            value={username}
+            onChangeText={setUsername}
+            style={styles.input}
+          />
+    
+          <TextInput
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            style={styles.input}
+          />
+          <Button title="Register" onPress={() => router.push("/register")} />
+          <Button title="Login" onPress={handleLogin} />
+        </View>
+      </TouchableWithoutFeedback>
     );
   }
   

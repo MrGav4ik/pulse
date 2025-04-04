@@ -3,9 +3,10 @@ import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import axios from "axios";
-import { API_BASE_URL } from "@env";
 
-const API_BASE_URL = "http://172.20.10.5:8000";
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_AUTH_API_URL;
+
 
 interface User {
   id: number;
@@ -33,7 +34,6 @@ export default function ProfileScreen() {
       });
 
       setUser(response.data);
-      console.debug(response);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching profile: ", error);
