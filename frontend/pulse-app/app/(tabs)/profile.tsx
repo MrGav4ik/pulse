@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import axios from "axios";
+import { Float } from "react-native/Libraries/Types/CodegenTypes";
 
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_AUTH_API_URL;
@@ -11,7 +12,9 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_AUTH_API_URL;
 interface User {
   id: number;
   username: string;
+  name: string,
   email: string;
+  token_exp: number;
 }
 
 export default function ProfileScreen() {
@@ -65,22 +68,28 @@ export default function ProfileScreen() {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.title}>Profile Screen</Text>
-      {user ? (
-        <>
-          <Text style={styles.text}>Username: {user.username}</Text>
-        </>
-      ) : (
-        <Text style={styles.text}>No user data available.</Text>
-      )}
-      <Button title="Logout" onPress={handleLogout} />
-    </ScrollView>
+      <ScrollView>
+        {user ? (
+          <View style={styles.userData}>
+            <Text style={styles.text}>ID: {user.id}</Text>
+            <Text style={styles.text}>Name: {user.name}</Text>
+            <Text style={styles.text}>Username: {user.username}</Text>
+            <Text style={styles.text}>Email: {user.email}</Text>
+          </View>
+        ) : (
+          <Text style={styles.text}>No user data available.</Text>
+        )}
+        <Button title="Logout" onPress={handleLogout} />
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 10, backgroundColor: "#49657b", paddingTop: 50, paddingBottom: 0},
+  userData: {flex: 1, justifyContent: "center", alignItems: "center"},
   title: {
     fontSize: 24,
     fontWeight: "bold",

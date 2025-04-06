@@ -15,19 +15,20 @@ export default function LoginScreen() {
     const router = useRouter();
 
     const handleLogin = async () => {
-        try {
-            const response = await axios.post(`${API_BASE_URL}/auth/login`, {
-                "username": username,
-                "password": password
-            }, {
-                timeout: 5000
-            });
+      try {
+        console.debug("✅", API_BASE_URL)
+        const response = await axios.post(`${API_BASE_URL}/auth/login`, {
+            "username": username,
+            "password": password
+        }, {
+            timeout: 5000
+        });
 
-            if (response.data && response.data.access_token) {
-                AsyncStorage.setItem("token", response.data.access_token).then(() => router.replace("/(tabs)"));
-            } else {
-                Alert.alert("Login Failed", "Invalid username or password.");
-            }
+        if (response.data && response.data.access_token) {
+          AsyncStorage.setItem("token", response.data.access_token).then(() => router.replace("/(tabs)"));
+        } else {
+            Alert.alert("Login Failed", "Invalid username or password.");
+        }
         } catch (error) {
             console.error("Login error: ", error);
             Alert.alert("Login Error", "There was an error logging in. Please try again.");

@@ -25,7 +25,6 @@ interface NewsItem {
   author: string;
   url: string;
   urlToImage: string;
-
 }
 
 

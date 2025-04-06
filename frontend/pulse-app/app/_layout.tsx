@@ -3,6 +3,7 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator, View } from 'react-native';
+import { jwtDecode } from 'jwt-decode';
 
 export default function RootLayout() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -13,6 +14,18 @@ export default function RootLayout() {
     try {
       const token = await AsyncStorage.getItem('token');
       setIsAuthenticated(!!token);
+      if (token) {
+        const decoded_token = jwtDecode(token)
+        const exp = decoded_token.exp
+        const now = Math.floor(Date.now() / 1000)
+
+        if (exp && now > exp) {
+          await AsyncStorage.removeItem("token")
+          return null;
+        }
+      }
+
+      //console.debug("✅ Authenticated", token)
     } catch (error) {
       console.error("Error checking auth status:", error);
       setIsAuthenticated(false);

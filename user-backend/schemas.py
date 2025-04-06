@@ -15,4 +15,7 @@ class Token(BaseModel):
     token_type: str
 
 class UserProfile(BaseModel):
+    id: int
     username: str
+    email: EmailStr
+    name: str
