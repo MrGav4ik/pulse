@@ -76,7 +76,7 @@ export default function NewsDetailsScreen() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => router.push("news")} style={styles.backButton}>
+      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
         <Icon name="chevron-back-outline" size={30} color="#041D56" />
         <Text style={styles.backText}>Back</Text>
       </TouchableOpacity>

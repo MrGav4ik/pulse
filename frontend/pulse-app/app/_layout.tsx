@@ -25,7 +25,6 @@ export default function RootLayout() {
         }
       }
 
-      //console.debug("✅ Authenticated", token)
     } catch (error) {
       console.error("Error checking auth status:", error);
       setIsAuthenticated(false);
@@ -62,7 +61,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="login" options={{ headerShown: false, animation: "slide_from_left" }} />
         <Stack.Screen name="register" options={{ headerShown: false }} />
       </Stack>
     </GestureHandlerRootView>

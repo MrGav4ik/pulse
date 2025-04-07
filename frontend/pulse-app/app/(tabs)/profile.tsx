@@ -26,7 +26,7 @@ export default function ProfileScreen() {
     try {
       const token = await AsyncStorage.getItem("token");
       if (!token) {
-        console.log("No token found.");
+        router.replace("/login");
         return;
       }
 

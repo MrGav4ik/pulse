@@ -1,13 +1,12 @@
 import { StyleSheet, Text, View, FlatList, ActivityIndicator} from "react-native";
 import { useEffect, useState, useCallback } from "react";
-import { Link, NavigationContainer } from "@react-navigation/native";
 import axios from "axios";
 import { GestureHandlerRootView, NativeViewGestureHandler, RefreshControl, ScrollView } from "react-native-gesture-handler";
 import { SearchBar } from '@rneui/themed';
 import { Component } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Image } from 'expo-image';
-import { useNavigation } from "@react-navigation/native";
+import { useRouter, Link } from "expo-router";
 
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_NEWS_API_URL;
@@ -29,12 +28,12 @@ interface NewsItem {
 
 
 export default function NewsScreen() {
-  const navigation = useNavigation();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [search, setSearch] = useState<string | null>(null);
+  const router = useRouter();
   
 
   const fetchNews = useCallback(async (query = "default") => {
@@ -42,7 +41,6 @@ export default function NewsScreen() {
     setError(null);
 
     try {
-        const timestart = new Date().getTime();
         const { data } = await axios.get(`${API_BASE_URL}/news?query=${query}`, { timeout: 3000 });
 
         if (!Array.isArray(data)) {
@@ -127,7 +125,7 @@ export default function NewsScreen() {
                 initialNumToRender={5}
                 maxToRenderPerBatch={5}
                 renderItem={({ item }) => (
-                  <Link key={item.id} screen="details" params={{ id: item.id, imageUrl: item.urlToImage }} style={styles.newsItem}>
+                  <Link key={item.id} href={{ pathname: "/(tabs)/(news)/news_details", params: { id: item.id } }} style={styles.newsItem}>
                     <View>
                       {item.title && <Text style={styles.newsTitle}>{item.title}</Text>}
                       {item.urlToImage && <Image source={{ uri: item.urlToImage }} cachePolicy="memory-disk" style={styles.newsImage} />}

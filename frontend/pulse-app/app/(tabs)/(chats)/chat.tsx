@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { FlatList } from "react-native-gesture-handler";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter, Link } from "expo-router";
 
 
 const AUTH_BASE_URL = process.env.EXPO_PUBLIC_AUTH_API_URL;
@@ -26,12 +27,13 @@ export default function ChatScreen() {
     const [user, setUser] = useState<User | null>(null);
     const [chat, setChat] = useState<Chat[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const router = useRouter();
     
     const getProfile = async () => {
         try {
           const token = await AsyncStorage.getItem("token");
           if (!token) {
-            console.log("No token found.");
+            router.replace("/login");
             return;
           }
     
@@ -90,10 +92,12 @@ export default function ChatScreen() {
                 data={chat}
                 keyExtractor={(item) => item.chat_id!.toString()}
                 renderItem={({ item }) => (
-                    <View style={styles.chat}>
-                        <Text style={styles.name}>{item.user_name}</Text>
-                        <Text style={styles.message}>{item.message}</Text>
-                    </View>
+                    <Link key={item.chat_id} href={{ pathname: "/(tabs)/(chats)/chat_details", params: { chat_id: item.chat_id }}} style={styles.chat}>
+                        <View>
+                            <Text style={styles.name}>{item.user_name}</Text>
+                            <Text style={styles.message}>{item.message}</Text>
+                        </View>
+                    </Link>
                 )}
             >
             </FlatList>}

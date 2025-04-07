@@ -22,13 +22,13 @@ export default function TabLayout() {
         title: "Home",
         tabBarIcon: ({ color }) => <Ionicons name="home-outline" size={28} color={color} />
       }} />
-      <Tabs.Screen name="chat"
+      <Tabs.Screen name="(chats)"
       options={{
         lazy: true,
         title: "Chat",
         tabBarIcon: ({ color }) => <Ionicons name="chatbubble-outline" size={28} color={color} />
       }} />
-      <Tabs.Screen name="news"
+      <Tabs.Screen name="(news)"
       options={{
         lazy: true,
         title: "News",
@@ -39,11 +39,6 @@ export default function TabLayout() {
         lazy: true,
         title: "Profile",
         tabBarIcon: ({ color }) => <Ionicons name="person-outline" size={28} color={color} />
-      }} />
-      <Tabs.Screen name="details"
-      options={{
-        lazy: true,
-        tabBarItemStyle: { display: "none" },
       }} />
     </Tabs>
   );
