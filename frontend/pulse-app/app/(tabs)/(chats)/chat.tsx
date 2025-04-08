@@ -4,11 +4,11 @@ import { FlatList } from "react-native-gesture-handler";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter, Link } from "expo-router";
+import { jwtDecode } from "jwt-decode";
 
 
 const AUTH_BASE_URL = process.env.EXPO_PUBLIC_AUTH_API_URL;
 const CHAT_BASE_URL = process.env.EXPO_PUBLIC_CHAT_API_URL;
-
 
 interface User {
     id?: number;
@@ -19,8 +19,9 @@ interface User {
 
 interface Chat {
     chat_id?: number;
-    user_name: string;
-    message: string;
+    user_id: number
+    name: string;
+    last_message: string;
 }
 
 export default function ChatScreen() {
@@ -32,6 +33,7 @@ export default function ChatScreen() {
     const getProfile = async () => {
         try {
           const token = await AsyncStorage.getItem("token");
+
           if (!token) {
             router.replace("/login");
             return;
@@ -55,16 +57,18 @@ export default function ChatScreen() {
     const fetchChats = async () => {
         try {
             if (user) {
-                const { data } = await axios.get(`${CHAT_BASE_URL}/chat/chats?sender_id=${user.id}`, { timeout: 3000 });
+                const { data } = await axios.get(`${CHAT_BASE_URL}/chat/chats?user_id=${user.id}`, { timeout: 3000 });
 
                 if (!Array.isArray(data)) {
                     throw new Error("Unexpected API response format.");
                 }
+
                 const formattedChat = data
                     .map((item, index) => ({
                         chat_id: item?.chat_id || `${item?.user_name}-${index}`,
-                        user_name: item?.user_name || "Unknown",
-                        message: item?.message || "No Message",
+                        user_id: item?.user_id,
+                        name: item?.name || "Unknown",
+                        last_message: item?.last_message || "No Message",
                     }))
                     .filter((item) => item.chat_id);
 
@@ -92,10 +96,10 @@ export default function ChatScreen() {
                 data={chat}
                 keyExtractor={(item) => item.chat_id!.toString()}
                 renderItem={({ item }) => (
-                    <Link key={item.chat_id} href={{ pathname: "/(tabs)/(chats)/chat_details", params: { chat_id: item.chat_id }}} style={styles.chat}>
+                    <Link key={item.chat_id} href={{ pathname: "/(tabs)/(chats)/chat_details", params: { chat_id: item.chat_id, user_id: item.user_id }}} style={styles.chat}>
                         <View>
-                            <Text style={styles.name}>{item.user_name}</Text>
-                            <Text style={styles.message}>{item.message}</Text>
+                            <Text style={styles.name}>{item.name}</Text>
+                            <Text style={styles.message}>{item.last_message}</Text>
                         </View>
                     </Link>
                 )}
@@ -106,8 +110,8 @@ export default function ChatScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 10, backgroundColor: "#49657b", paddingTop: 50, paddingBottom: 0, },
-    chat: {backgroundColor: "white", padding: 10, borderRadius: 10, marginBottom: 10,},
+    container: { flex: 1, padding: 10, backgroundColor: "#49657b", paddingTop: 50, paddingBottom: 0},
+    chat: {backgroundColor: "white", padding: 10, borderRadius: 10, marginBottom: 10},
     message: { color: "black", fontSize: 20 },
     name: {color: "black", fontSize: 25 },
 });

@@ -1,75 +1,95 @@
 # chats.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from schemas import createChat, createMessage, getChat, getMessage
+from schemas import CreateChat, CreateMessage, GetChat, GetMessage, AddMember
 from database import get_db
-from models import User, Chat, Message
+from models import User, Chat, Message, ChatMember
 from datetime import datetime
 
 
 router = APIRouter(prefix="/chat")
 
 @router.post("/new_chat")
-def create_chat(chat: createChat, db: Session = Depends(get_db)):
-    """Create a new chat with the logged-in user"""
-    sender = db.query(User).filter(User.id == chat.sender_id).first()
-    
-    if not sender:
-        raise HTTPException(status_code=404, detail="Sender not found")
-    
-    receiver = db.query(User).filter_by(id=chat.receiver_id).first()
-    if not receiver:
-        raise HTTPException(status_code=404, detail="Receiver not found")
-    
-    new_chat = Chat(receiver_id=chat.receiver_id, sender_id=chat.sender_id)
+def create_chat(chat: CreateChat, db: Session = Depends(get_db)):
+    new_chat = Chat(name=chat.name, is_group=chat.is_group)
+
     db.add(new_chat)
     db.commit()
+    db.refresh(new_chat)
     
-    return {"message": "New chat created successfully"}
+    return {"message": "New chat created successfully", "chat_id": new_chat.id}
+
+@router.post("/new_member")
+def add_member(member: AddMember, db: Session = Depends(get_db)):
+    chat = db.query(Chat).filter_by(id=member.chat_id)
+
+    if not chat:
+        HTTPException(status_code=404, detail="Chat not found")
+
+    existing_member = db.query(ChatMember).filter_by(
+        chat_id=member.chat_id, user_id=member.user_id).first()
+
+
+    if existing_member:
+        raise HTTPException(status_code=400, detail="User is already a member of this chat")
+
+    new_member = ChatMember(chat_id=member.chat_id, user_id=member.user_id)
+    db.add(new_member)
+    db.commit()
+    db.refresh(new_member)
+
+    return {"message": "Member added successfully", "member_id": new_member.id}
 
 @router.post("/new_message")
-def create_message(message: createMessage, db: Session = Depends(get_db)):
+def create_message(message: CreateMessage, db: Session = Depends(get_db)):
     """Create a new message in a chat"""
-    chat = db.query(Chat).filter_by(chat_id=message.chat_id).first()
+    chat = db.query(Chat).filter_by(id=message.chat_id).first()
     
     if not chat:
         raise HTTPException(status_code=404, detail="Chat not found")
     
-    new_message = Message(chat_id=message.chat_id, message_content=message.content, message_sender_id=message.sender_id, message_receiver_id=message.receiver_id)
+    new_message = Message(chat_id=message.chat_id, content=message.content, sender_id=message.sender_id,
+                          message_type=message.message_type, reply_to_id=message.reply_to_id)
+    
     db.add(new_message)
     db.commit()
+    db.refresh(new_message)
 
-    return {"message": "New message created successfully"}
+    return {"message": "New message created successfully", "message_id": new_message.id}
 
 @router.get("/chats")
-def get_chats(sender_id: int, db: Session = Depends(get_db)):
-    """Fetch all chats for the logged-in user"""
+def get_chats(user_id: int, db: Session = Depends(get_db)):
+    chat_list = []
 
-    user = db.query(User).filter(User.id == sender_id).first()
+    chats = (
+        db.query(Chat).join(ChatMember, Chat.id == ChatMember.chat_id).filter(ChatMember.user_id == user_id).all()
+    )
 
-    chat = db.query(Chat).filter(Chat.receiver_id == user.id or sender_id == user.id).first()
-    
-    if not user:
-        print("User not found")
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    chats = []
-    if chat:
-        for chat in user.sent_chats + user.received_chats:
-            if chat:
-                last_message = chat.messages[-1].message_content if chat.messages else None
-                chats.append(getChat(
-                    user_id=user.id,
-                    chat_id=chat.chat_id,
-                    user_name=user.name,
-                    message=last_message
-                ))
-    
-    if not chats:
-        print("Chat not found")
-        raise HTTPException(status_code=404, detail="No chats found for this user")
+    for chat in chats:
+        user = None
+        if not chat.is_group:
+            user = (
+                db.query(User)
+                .join(ChatMember, User.id == ChatMember.user_id)
+                .filter(ChatMember.chat_id == chat.id, ChatMember.user_id != user_id)
+                .first()
+            )
 
-    return chats
+        last_msg = (
+            db.query(Message).filter(Message.chat_id == chat.id).order_by(Message.sent_at.desc()).first()
+        )
+
+        formatted = GetChat(
+            user_id=user.id if user else user_id,
+            chat_id=chat.id,
+            name=user.name if user else chat.name,
+            created_at=chat.created_at,
+            last_message=last_msg.content if last_msg else None
+        )
+
+        chat_list.append(formatted)
+
+    return chat_list
 
 @router.get("/messages")
 def get_messages(chat_id: int, db: Session = Depends(get_db)):

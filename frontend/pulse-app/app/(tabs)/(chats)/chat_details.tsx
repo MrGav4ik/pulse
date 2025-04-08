@@ -1,24 +1,25 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Touchable, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { useRoute } from '@react-navigation/native';
+import { useRouter } from "expo-router";
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const CHAT_BASE_URL = process.env.EXPO_PUBLIC_CHAT_API_URL;
 
-
 interface Message {
+  id: number;
   chat_id: number;
-  message_sender_id: number;
-  message_receiver_id: number;
-  message_id: number;
-  message_content: string;
-  message_timestamp: string;
+  sender_id: number;
+  content: string;
+  sent_at: string;
 }
 
 export default function ChatDetailsScreen() {
   const [messages, setMessages] = useState<Message[]>([]);
   const route = useRoute();
-  const { chat_id } = route.params as { chat_id: number };
+  const router = useRouter();
+  const { chat_id } = route.params as { chat_id: number }
 
   const fetchMessages = async () => {
     try {
@@ -44,13 +45,17 @@ export default function ChatDetailsScreen() {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+              <Icon name="chevron-back-outline" size={30} color="#041D56" />
+              <Text style={styles.backText}>Back</Text>
+            </TouchableOpacity>
       <FlatList
         data={messages}
-        keyExtractor={(item) => item.message_id.toString()}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.messageBox}>
-            <Text style={styles.messageText}>{item.message_content}</Text>
-            <Text style={styles.timestamp}>{item.message_timestamp}</Text>
+            <Text style={styles.messageText}>{item.content}</Text>
+            <Text style={styles.timestamp}>{item.sent_at}</Text>
           </View>
         )}
         contentContainerStyle={{ paddingBottom: 20 }}
@@ -81,5 +86,18 @@ const styles = StyleSheet.create({
     color: '#999',
     marginTop: 4,
     textAlign: 'right',
+  },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: -10,
+    borderRadius: 10,
+    marginBottom: 10,
+    width: 80,
+  },
+  backText: {
+    fontSize: 18,
+    marginLeft: -5,
+    color: '#041D56',
   },
 });

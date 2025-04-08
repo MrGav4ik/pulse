@@ -1,23 +1,33 @@
 from pydantic import BaseModel
+from datetime import datetime
+from typing import Optional
 
-class createChat(BaseModel):
-    receiver_id: int
-    sender_id: int
+class CreateChat(BaseModel):
+    name: Optional[str] = None
+    is_group: bool = False
 
-class createMessage(BaseModel):
+class CreateMessage(BaseModel):
     chat_id: int
     sender_id: int
-    receiver_id: int
     content: str
+    message_type: str = "text"
+    reply_to_id: Optional[int] = None
 
-class getChat(BaseModel):
+class AddMember(BaseModel):
+    chat_id: int
+    user_id: int
+
+class GetChat(BaseModel):
     user_id: int
     chat_id: int
-    user_name: str
-    message: str
+    name: Optional[str] = None
+    last_message: Optional[str] = None
+    created_at: datetime
 
-class getMessage(BaseModel):
+class GetMessage(BaseModel):
+    message_id: int
+    chat_id: int
     sender_id: int
-    receiver_id: int
-    message_content: str
-    message_timestamp: str
+    content: str
+    reply_to_id: Optional[int] = None
+    sent_at: datetime
